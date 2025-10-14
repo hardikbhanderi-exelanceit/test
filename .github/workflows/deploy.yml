@@ -1,0 +1,49 @@
+name: CI/CD Deploy to AWS EC2
+
+on:
+  push:
+    branches: ["main", "dev"]
+
+env:
+  CONTAINER_IMAGE: hardikexelanceit/test-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Docker image
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
+          docker build -t $CONTAINER_IMAGE:latest .
+          docker push $CONTAINER_IMAGE:latest
+          docker logout
+
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          script: |
+            echo "Pulling latest image..."
+            sudo docker pull $CONTAINER_IMAGE:latest
+            echo "Stopping existing container..."
+            sudo docker stop test-app 2>/dev/null || echo "No container to stop"
+            echo "Removing existing container..."
+            sudo docker rm test-app 2>/dev/null || echo "No container to remove"
+            echo "Starting new container..."
+              sudo docker run -d --name test-app -p 80:3000 -p 3000:3000 -e NODE_ENV=production -e PORT=3000 --restart unless-stopped $CONTAINER_IMAGE:latest
+            echo "Verifying container is running..."
+            sudo docker ps | grep test-app
