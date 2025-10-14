@@ -1,73 +1,43 @@
-image: atlassian/default-image:3
+name: CI/CD Deploy to AWS EC2
 
-definitions:
-  services:
-    docker:
-      memory: 2048
+on:
+  push:
+    branches: ["main", "dev"]
 
-  caches:
-    node: node_modules
+env:
+  CONTAINER_IMAGE: hardikexelanceit/test-app
 
-pipelines:
-  branches:
-    main:
-      - step:
-          name: trigger_manual
-          script:
-            - echo "Trigger manually if needed"
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-      - step:
-          name: verify_prod_env
-          trigger: manual
-          script:
-            - echo "Verifying production environment variables..."
-            - echo "Creating environment file from pipeline variables..."
-            - echo $PROD_ENV_FILE | tr -s "###" "\n" >> .env.generated
-            - echo "Checking if all required keys from .env.example exist..."
-            - |
-              # Extract keys from .env.example (ignore comments and empty lines)
-              grep -v '^#' .env.example | grep -v '^$' | cut -d'=' -f1 > required_keys.txt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-              # Extract keys from generated env file
-              grep -v '^#' .env.generated | grep -v '^$' | cut -d'=' -f1 > provided_keys.txt
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-              # Check if all required keys are provided
-              MISSING_KEYS=$(comm -23 <(sort required_keys.txt) <(sort provided_keys.txt))
+      - name: Install dependencies
+        run: npm ci
 
-              if [ ! -z "$MISSING_KEYS" ]; then
-                echo "❌ ERROR: Missing required environment variables:"
-                echo "$MISSING_KEYS"
-                echo "Pipeline FAILED - Environment validation failed"
-                exit 1
-              else
-                echo "✅ All required environment variables are present"
-              fi
-            - rm .env.generated required_keys.txt provided_keys.txt
+      - name: Build Docker image
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
+          docker build -t $CONTAINER_IMAGE:latest .
+          docker push $CONTAINER_IMAGE:latest
+          docker logout
 
-      - step:
-          name: build_prod
-          trigger: manual
-          script:
-            - apt-get update && apt-get install jq -y
-            - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-            - export VERSION=$(jq -r '.version' package.json)
-            - export CONTAINER_PROD_IMAGE=$CONTAINER_IMAGE:prod-$VERSION
-            - export CONTAINER_PROD_IMAGE_LATEST=$CONTAINER_IMAGE:prod-latest
-            - docker build -f docker/prod/Dockerfile -t $CONTAINER_PROD_IMAGE -t $CONTAINER_PROD_IMAGE_LATEST .
-            - docker push $CONTAINER_PROD_IMAGE
-            - docker push $CONTAINER_PROD_IMAGE_LATEST
-            - docker rmi $CONTAINER_PROD_IMAGE $CONTAINER_PROD_IMAGE_LATEST
-            - docker logout
-          services:
-            - docker
-
-  pull-requests:
-    "**":
-      - step:
-          name: test_build
-          image: node:18
-          caches:
-            - node
-          script:
-            - npm ci
-            - npm test || echo "No tests found"
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          script: |
+            sudo docker pull $CONTAINER_IMAGE:latest
+            sudo docker stop test-app || true
+            sudo docker rm test-app || true
+            sudo docker run -d --name test-app -p 80:80 $CONTAINER_IMAGE:latest
