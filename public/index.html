@@ -3,50 +3,284 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Jewelry Store - Home</title>
+    <title>Aurora Jewelry - Handcrafted Elegance</title>
     <link rel="stylesheet" href="/styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <h1 class="brand">Aurora Jewelry</h1>
-        <nav class="nav">
-          <a href="#products">Products</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
+        <div class="header-content">
+          <h1 class="brand">
+            <i class="fas fa-gem"></i>
+            Aurora Jewelry
+          </h1>
+          <nav class="nav">
+            <a href="#" data-page="home" class="nav-link active">Home</a>
+            <a href="#" data-page="products" class="nav-link">Products</a>
+            <a href="#" data-page="about" class="nav-link">About</a>
+            <a href="#" data-page="contact" class="nav-link">Contact</a>
+            <a href="#" data-page="cart" class="nav-link cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </nav>
+          <div class="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+          </div>
+        </div>
       </div>
     </header>
 
-    <main class="container">
-      <section id="hero" class="hero">
-        <h2>Handcrafted jewelry inspired by the sky</h2>
-        <p>Minimal, elegant pieces for everyday wear.</p>
-      </section>
+    <main class="main-content">
+      <!-- Home Page -->
+      <div id="home-page" class="page active">
+        <section class="hero">
+          <div class="hero-content">
+            <div class="hero-text">
+              <h2>Handcrafted Elegance</h2>
+              <p>Discover our collection of timeless jewelry pieces, each crafted with passion and inspired by the natural beauty of aurora lights.</p>
+              <button class="cta-button" data-page="products">Shop Collection</button>
+            </div>
+            <div class="hero-image">
+              <div class="floating-gems">
+                <i class="fas fa-gem gem-1"></i>
+                <i class="fas fa-gem gem-2"></i>
+                <i class="fas fa-gem gem-3"></i>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section id="products" class="products">
-        <h2>Featured Products</h2>
-        <div id="product-list" class="product-list"></div>
-      </section>
+        <section class="featured-products">
+          <div class="container">
+            <h2>Featured Collection</h2>
+            <div id="featured-list" class="product-grid"></div>
+          </div>
+        </section>
 
-      <section id="about" class="about">
-        <h2>About Us</h2>
-        <p>
-          We craft jewelry with attention to detail and timeless designs. Each
-          piece is inspected and packaged with care.
-        </p>
-      </section>
+        <section class="testimonials">
+          <div class="container">
+            <h2>What Our Customers Say</h2>
+            <div class="testimonial-grid">
+              <div class="testimonial">
+                <div class="stars">★★★★★</div>
+                <p>"Absolutely stunning pieces. The quality is exceptional and the designs are unique."</p>
+                <div class="author">- Sarah M.</div>
+              </div>
+              <div class="testimonial">
+                <div class="stars">★★★★★</div>
+                <p>"Fast shipping and beautiful packaging. My Luna ring is perfect for everyday wear."</p>
+                <div class="author">- Emma L.</div>
+              </div>
+              <div class="testimonial">
+                <div class="stars">★★★★★</div>
+                <p>"Aurora Jewelry has become my go-to for special gifts. Always impressed!"</p>
+                <div class="author">- Michael R.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Products Page -->
+      <div id="products-page" class="page">
+        <div class="container">
+          <div class="page-header">
+            <h1>Our Collection</h1>
+            <p>Explore our carefully curated selection of handcrafted jewelry</p>
+          </div>
+          
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Products</button>
+            <button class="filter-btn" data-filter="rings">Rings</button>
+            <button class="filter-btn" data-filter="necklaces">Necklaces</button>
+            <button class="filter-btn" data-filter="bracelets">Bracelets</button>
+          </div>
+
+          <div id="product-list" class="product-grid"></div>
+        </div>
+      </div>
+
+      <!-- About Page -->
+      <div id="about-page" class="page">
+        <div class="container">
+          <div class="about-content">
+            <div class="about-text">
+              <h1>About Aurora Jewelry</h1>
+              <p class="lead">Born from a passion for timeless elegance and natural beauty, Aurora Jewelry brings you handcrafted pieces that tell a story.</p>
+              
+              <div class="story-section">
+                <h3>Our Story</h3>
+                <p>Founded in 2020, Aurora Jewelry began as a small studio where every piece was carefully crafted by hand. Inspired by the dancing lights of the aurora borealis, our designs capture the ethereal beauty of nature in precious metals and stones.</p>
+              </div>
+
+              <div class="values-section">
+                <h3>Our Values</h3>
+                <div class="values-grid">
+                  <div class="value">
+                    <i class="fas fa-heart"></i>
+                    <h4>Craftsmanship</h4>
+                    <p>Every piece is meticulously handcrafted with attention to detail</p>
+                  </div>
+                  <div class="value">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Sustainability</h4>
+                    <p>We use ethically sourced materials and eco-friendly practices</p>
+                  </div>
+                  <div class="value">
+                    <i class="fas fa-gem"></i>
+                    <h4>Quality</h4>
+                    <p>Only the finest materials make it into our collections</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="about-image">
+              <div class="image-placeholder">
+                <i class="fas fa-tools"></i>
+                <p>Artisan at Work</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Page -->
+      <div id="contact-page" class="page">
+        <div class="container">
+          <div class="contact-content">
+            <div class="contact-info">
+              <h1>Get in Touch</h1>
+              <p class="lead">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+              
+              <div class="contact-details">
+                <div class="contact-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <div>
+                    <h4>Visit Our Studio</h4>
+                    <p>123 Artisan Lane<br>Creative District, CD 12345</p>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <i class="fas fa-phone"></i>
+                  <div>
+                    <h4>Call Us</h4>
+                    <p>+1 (555) 123-4567</p>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <i class="fas fa-envelope"></i>
+                  <div>
+                    <h4>Email Us</h4>
+                    <p>hello@aurorajewelry.com</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form class="contact-form" id="contact-form">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required>
+                  <option value="">Select a subject</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="custom">Custom Order</option>
+                  <option value="support">Customer Support</option>
+                  <option value="wholesale">Wholesale Inquiry</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Page -->
+      <div id="cart-page" class="page">
+        <div class="container">
+          <h1>Shopping Cart</h1>
+          <div id="cart-content">
+            <div id="cart-items" class="cart-items"></div>
+            <div id="cart-summary" class="cart-summary"></div>
+          </div>
+          <div id="empty-cart" class="empty-cart" style="display: none;">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Your cart is empty</h3>
+            <p>Add some beautiful pieces to get started!</p>
+            <button class="cta-button" data-page="products">Shop Now</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer class="site-footer">
-      <div class="container footer-inner">
-        <div>© <span id="year"></span> Aurora Jewelry</div>
-        <div class="social">
-          Follow us: <a href="#">Instagram</a> • <a href="#">Pinterest</a>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Aurora Jewelry</h3>
+            <p>Handcrafted elegance inspired by natural beauty.</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-pinterest"></i></a>
+              <a href="#"><i class="fab fa-facebook"></i></a>
+            </div>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="#" data-page="products">Products</a></li>
+              <li><a href="#" data-page="about">About</a></li>
+              <li><a href="#" data-page="contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Customer Care</h4>
+            <ul>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Returns</a></li>
+              <li><a href="#">Size Guide</a></li>
+              <li><a href="#">Care Instructions</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Newsletter</h4>
+            <p>Subscribe for updates and special offers</p>
+            <div class="newsletter">
+              <input type="email" placeholder="Your email">
+              <button>Subscribe</button>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; <span id="year"></span> Aurora Jewelry. All rights reserved.</p>
         </div>
       </div>
     </footer>
 
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
     <script src="/script.js"></script>
+  </body>
+</html>
   </body>
 </html>
