@@ -60,4 +60,9 @@ app.get("*", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(
+    `API endpoint at http://${
+      process.env.HOST || "localhost"
+    }:${PORT}/api/products`
+  );
 });
