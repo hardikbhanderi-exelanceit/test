@@ -59,4 +59,4 @@ jobs:
             sudo docker pull ${{ steps.meta.outputs.tags }}
             sudo docker stop test-app || true
             sudo docker rm test-app || true
-            sudo docker run -d --name test-app -p 80:3000 ${{ steps.meta.outputs.tags }}
+            sudo docker run -d --name test-app -p 3000:3000 ${{ steps.meta.outputs.tags }}
