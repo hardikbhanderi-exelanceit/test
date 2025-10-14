@@ -18,6 +18,9 @@ RUN npm run build 2>/dev/null || echo "No build script found"
 # Production stage
 FROM node:18-alpine AS production
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
 WORKDIR /app
 
 # Copy package files
@@ -42,6 +45,6 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/products', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD curl -f http://localhost:3000/api/products || exit 1
 
 CMD ["node", "server.js"]
