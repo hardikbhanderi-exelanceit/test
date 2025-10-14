@@ -1,0 +1,23 @@
+node_modules/
+.env
+npm-debug.log*
+.DS_Store
+.vscode/
+dist/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# AWS
+.aws/
+aws-credentials
+*.pem
+
+# Logs
+logs/
+*.log
+
+# Coverage
+coverage/
+.nyc_output/

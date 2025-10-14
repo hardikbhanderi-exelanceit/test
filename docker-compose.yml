@@ -1,0 +1,27 @@
+version: "3.8"
+
+# Quick development setup - uses organized Docker structure
+# For full development with database/redis: ./docker/scripts/dev-start.sh --with-db --with-redis
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    container_name: aurora-jewelry-dev-quick
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - APP_PORT=3000
+      - APP_NAME=aurora-jewelry-dev
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

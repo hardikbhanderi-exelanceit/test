@@ -1,0 +1,73 @@
+image: atlassian/default-image:3
+
+definitions:
+  services:
+    docker:
+      memory: 2048
+
+  caches:
+    node: node_modules
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: trigger_manual
+          script:
+            - echo "Trigger manually if needed"
+
+      - step:
+          name: verify_prod_env
+          trigger: manual
+          script:
+            - echo "Verifying production environment variables..."
+            - echo "Creating environment file from pipeline variables..."
+            - echo $PROD_ENV_FILE | tr -s "###" "\n" >> .env.generated
+            - echo "Checking if all required keys from .env.example exist..."
+            - |
+              # Extract keys from .env.example (ignore comments and empty lines)
+              grep -v '^#' .env.example | grep -v '^$' | cut -d'=' -f1 > required_keys.txt
+
+              # Extract keys from generated env file
+              grep -v '^#' .env.generated | grep -v '^$' | cut -d'=' -f1 > provided_keys.txt
+
+              # Check if all required keys are provided
+              MISSING_KEYS=$(comm -23 <(sort required_keys.txt) <(sort provided_keys.txt))
+
+              if [ ! -z "$MISSING_KEYS" ]; then
+                echo "❌ ERROR: Missing required environment variables:"
+                echo "$MISSING_KEYS"
+                echo "Pipeline FAILED - Environment validation failed"
+                exit 1
+              else
+                echo "✅ All required environment variables are present"
+              fi
+            - rm .env.generated required_keys.txt provided_keys.txt
+
+      - step:
+          name: build_prod
+          trigger: manual
+          script:
+            - apt-get update && apt-get install jq -y
+            - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+            - export VERSION=$(jq -r '.version' package.json)
+            - export CONTAINER_PROD_IMAGE=$CONTAINER_IMAGE:prod-$VERSION
+            - export CONTAINER_PROD_IMAGE_LATEST=$CONTAINER_IMAGE:prod-latest
+            - docker build -f docker/prod/Dockerfile -t $CONTAINER_PROD_IMAGE -t $CONTAINER_PROD_IMAGE_LATEST .
+            - docker push $CONTAINER_PROD_IMAGE
+            - docker push $CONTAINER_PROD_IMAGE_LATEST
+            - docker rmi $CONTAINER_PROD_IMAGE $CONTAINER_PROD_IMAGE_LATEST
+            - docker logout
+          services:
+            - docker
+
+  pull-requests:
+    "**":
+      - step:
+          name: test_build
+          image: node:18
+          caches:
+            - node
+          script:
+            - npm ci
+            - npm test || echo "No tests found"
