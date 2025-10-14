@@ -37,13 +37,24 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           script: |
+            set -e
             echo "Pulling latest image..."
-            sudo docker pull $CONTAINER_IMAGE:latest
+            sudo docker pull ${{ env.CONTAINER_IMAGE }}:latest
+            
             echo "Stopping existing container..."
-            sudo docker stop test-app 2>/dev/null || echo "No container to stop"
+            sudo docker stop test-app 2>/dev/null || true
+            
             echo "Removing existing container..."
-            sudo docker rm test-app 2>/dev/null || echo "No container to remove"
+            sudo docker rm test-app 2>/dev/null || true
+            
             echo "Starting new container..."
-            sudo docker run -d --name test-app -p 80:3000 -e NODE_ENV=production -e PORT=3000 --restart unless-stopped $CONTAINER_IMAGE:latest
+            DOCKER_CMD="sudo docker run -d --name test-app"
+            DOCKER_CMD="$DOCKER_CMD -p 80:3000"
+            DOCKER_CMD="$DOCKER_CMD -e NODE_ENV=production"
+            DOCKER_CMD="$DOCKER_CMD -e PORT=3000"
+            DOCKER_CMD="$DOCKER_CMD --restart unless-stopped"
+            DOCKER_CMD="$DOCKER_CMD ${{ env.CONTAINER_IMAGE }}:latest"
+            eval $DOCKER_CMD
+            
             echo "Verifying container is running..."
             sudo docker ps | grep test-app
