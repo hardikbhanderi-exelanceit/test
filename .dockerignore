@@ -19,8 +19,6 @@ coverage
 
 # Env files (keep example)
 .env
-.env.*
-!.env.example
 
 # Local runtime artifacts
 logs
