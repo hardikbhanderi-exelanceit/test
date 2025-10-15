@@ -71,4 +71,5 @@ jobs:
               echo "ERROR: One or more required environment variables are missing."
               exit 1
             fi
+            echo "✅ All required environment variables are set."
             sudo docker run -d --name test-app -p 3000:3000 ${{ steps.meta.outputs.tags }}
