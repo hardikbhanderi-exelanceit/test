@@ -537,8 +537,16 @@ const enhancedProducts = [
     price: 79.0,
     image: "/images/pendant.jpg",
     description:
-      "Elegant sterling silver pendant with crystal accents that capture light beautifully.",
+      "Elegant sterling silver pendant with crystal accents that capture light beautifully. Perfect for special occasions or everyday wear. Includes a premium gift box.",
     category: "necklaces",
+    materials: "Sterling silver, crystal",
+    care: "Clean with soft cloth, avoid chemicals",
+    shipping: "3-5 business days",
+    inStock: true,
+    dimensions: "Pendant: 2cm x 2cm, Chain: 45cm adjustable",
+    warranty: "1 year warranty included",
+    origin: "Handcrafted in Italy",
+    gallery: ["/images/pendant.jpg", "/images/pendant-detail.jpg"],
   },
   {
     id: 2,
