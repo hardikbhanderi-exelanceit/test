@@ -103,15 +103,7 @@ jobs:
 
             # Report final results
             if [ ${#MISSING_KEYS[@]} -gt 0 ]; then
-              echo ""
-              echo "❌ VALIDATION FAILED!"
-              echo ""
-              echo "Missing keys in .env:"
-              for key in "${MISSING_KEYS[@]}"; do
-                echo "  - $key"
-              done
-              echo ""
-              echo "Please add these variables to: ~/test/.env"
+              echo "❌ VALIDATION FAILED! Missing required environment variables."
               exit 1
             fi
 
