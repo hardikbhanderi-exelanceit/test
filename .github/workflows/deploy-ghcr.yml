@@ -60,6 +60,12 @@ jobs:
             sudo docker stop test-app || true
             sudo docker rm test-app || true
             missing=0
+            if [ -f .env.sample ]; then
+              echo ".env.sample file found. Checking required environment variables..."
+            else
+              echo "ERROR: .env.sample file not found!"
+              exit 1
+            fi
             while IFS= read -r line; do
               key=$(echo "$line" | cut -d= -f1)
               if [ -n "$key" ] && [ -z "${!key}" ]; then
