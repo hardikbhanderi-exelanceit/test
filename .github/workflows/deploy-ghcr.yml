@@ -27,6 +27,110 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Copy validation files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          source: ".env.example"
+          target: "~/test/"
+          strip_components: 0
+
+      - name: Validate Environment Variables on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/test
+
+            echo "🔍 Starting environment validation..."
+            echo "================================"
+
+            # Check if .env exists
+            if [ ! -f ".env" ]; then
+              echo "❌ ERROR: .env file not found in ~/test/"
+              echo "Please create .env file on EC2 instance"
+              exit 1
+            fi
+
+            echo "✅ .env file found"
+
+            # Check if .env.example exists
+            if [ ! -f ".env.example" ]; then
+              echo "❌ ERROR: .env.example file not found"
+              exit 1
+            fi
+
+            echo "✅ .env.example file found"
+            echo ""
+
+            # Extract keys from .env.example (ignore comments and empty lines)
+            REQUIRED_KEYS=$(grep -v '^#' .env.example | grep -v '^$' | grep '=' | cut -d '=' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+            MISSING_KEYS=()
+            EMPTY_KEYS=()
+
+            echo "🔎 Checking required environment variables..."
+            echo ""
+
+            # Check each required key
+            while IFS= read -r key; do
+              if [ -z "$key" ]; then
+                continue
+              fi
+              
+              # Check if key exists in .env
+              if ! grep -q "^${key}=" .env; then
+                MISSING_KEYS+=("$key")
+                echo "❌ Missing: $key"
+              else
+                # Check if key has a value
+                VALUE=$(grep "^${key}=" .env | cut -d '=' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '"' | tr -d "'")
+                if [ -z "$VALUE" ]; then
+                  EMPTY_KEYS+=("$key")
+                  echo "⚠️  Empty: $key"
+                else
+                  echo "✅ Valid: $key"
+                fi
+              fi
+            done <<< "$REQUIRED_KEYS"
+
+            echo ""
+            echo "================================"
+
+            # Report final results
+            if [ ${#MISSING_KEYS[@]} -gt 0 ]; then
+              echo ""
+              echo "❌ VALIDATION FAILED!"
+              echo ""
+              echo "Missing keys in .env:"
+              for key in "${MISSING_KEYS[@]}"; do
+                echo "  - $key"
+              done
+              echo ""
+              echo "Please add these variables to: ~/test/.env"
+              exit 1
+            fi
+
+            if [ ${#EMPTY_KEYS[@]} -gt 0 ]; then
+              echo ""
+              echo "⚠️  WARNING: Some variables are empty"
+              echo ""
+              echo "Empty keys in .env:"
+              for key in "${EMPTY_KEYS[@]}"; do
+                echo "  - $key"
+              done
+              echo ""
+              echo "Continuing deployment, but please verify these values"
+            fi
+
+            echo ""
+            echo "✅ Environment validation passed!"
+            echo "All required variables are present"
+
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
@@ -55,27 +159,47 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           script: |
-            sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            cd ~/test
+
+            echo "🚀 Starting deployment..."
+
+            # Login to container registry
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull latest image
+            echo "📦 Pulling latest image..."
             sudo docker pull ${{ steps.meta.outputs.tags }}
+
+            # Stop and remove old container
+            echo "🛑 Stopping old container..."
             sudo docker stop test-app || true
             sudo docker rm test-app || true
-            missing=0
-            if [ -f .env.sample ]; then
-              echo ".env.sample file found. Checking required environment variables..."
+
+            # Run new container with .env file
+            echo "▶️  Starting new container..."
+            sudo docker run -d \
+              --name test-app \
+              -p 3000:3000 \
+              --env-file .env \
+              --restart unless-stopped \
+              ${{ steps.meta.outputs.tags }}
+
+            # Wait and verify
+            echo "⏳ Waiting for container to start..."
+            sleep 5
+
+            if sudo docker ps | grep -q test-app; then
+              echo "✅ Deployment successful!"
+              echo ""
+              echo "📋 Container status:"
+              sudo docker ps --filter name=test-app --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+              echo ""
+              echo "📜 Recent logs:"
+              sudo docker logs --tail 20 test-app
             else
-              echo "ERROR: .env.sample file not found!"
+              echo "❌ Deployment failed - container is not running"
+              echo ""
+              echo "📜 Container logs:"
+              sudo docker logs test-app
               exit 1
             fi
-            while IFS= read -r line; do
-              key=$(echo "$line" | cut -d= -f1)
-              if [ -n "$key" ] && [ -z "${!key}" ]; then
-                echo "❌ Missing required environment variable: $key"
-                missing=1
-              fi
-            done < .env.sample
-            if [ $missing -eq 1 ]; then
-              echo "ERROR: One or more required environment variables are missing."
-              exit 1
-            fi
-            echo "✅ All required environment variables are set."
-            sudo docker run -d --name test-app -p 3000:3000 ${{ steps.meta.outputs.tags }}
