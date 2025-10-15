@@ -72,6 +72,79 @@ class AuroraJewelry {
     if (page === "cart") {
       this.renderCart();
     }
+    if (page === "product-details") {
+      this.renderProductDetailsPage();
+    }
+  }
+
+  // Product details page rendering
+  renderProductDetailsPage(productId = null) {
+    const container = document.getElementById("product-details-content");
+    let product = null;
+    if (productId) {
+      product = this.products.find((p) => p.id === productId);
+    } else {
+      // fallback: show first product
+      product = this.products[0];
+    }
+    if (!product) {
+      container.innerHTML = '<p class="error-message">Product not found.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <div class="details-page-grid">
+        <div class="details-gallery">
+          <img src="${product.image}" alt="${this.escapeHtml(
+      product.name
+    )}" class="details-main-img scroll-animate" />
+        </div>
+        <div class="details-info scroll-animate">
+          <h2>${this.escapeHtml(product.name)}</h2>
+          <div class="details-price">$${product.price.toFixed(2)}</div>
+          <p>${this.escapeHtml(product.description)}</p>
+          <div class="details-meta">
+            <div><strong>Materials:</strong> ${this.escapeHtml(
+              product.materials || "Sterling silver, natural stones"
+            )}</div>
+            <div><strong>Care:</strong> Clean with soft cloth, avoid chemicals</div>
+            <div><strong>Shipping:</strong> 3-5 business days</div>
+            <div><strong>Availability:</strong> ${
+              product.inStock ? "In Stock" : "Out of Stock"
+            }</div>
+          </div>
+          <button class="cta-button" onclick="app.addToCart(${
+            product.id
+          })">Add to Cart</button>
+        </div>
+      </div>
+    `;
+    this.triggerScrollAnimations();
+  }
+
+  // Scroll-triggered animation logic
+  triggerScrollAnimations() {
+    const animatedEls = document.querySelectorAll(".scroll-animate");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    animatedEls.forEach((el) => observer.observe(el));
+  }
+
+  // Home page scroll animation setup
+  setupScrollAnimations() {
+    window.addEventListener("DOMContentLoaded", () => {
+      this.triggerScrollAnimations();
+    });
+    window.addEventListener("scroll", () => {
+      this.triggerScrollAnimations();
+    });
   }
 
   // Product rendering
@@ -620,4 +693,5 @@ document.head.appendChild(style);
 let app;
 document.addEventListener("DOMContentLoaded", () => {
   app = new AuroraJewelry();
+  app.setupScrollAnimations();
 });
