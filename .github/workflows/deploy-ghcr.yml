@@ -36,7 +36,7 @@ jobs:
               echo "❌ Missing required environment variable: $key"
               missing=1
             fi
-          done < env.sample
+          done < .env.sample
           if [ $missing -eq 1 ]; then
             echo "ERROR: One or more required environment variables are missing."
             exit 1
