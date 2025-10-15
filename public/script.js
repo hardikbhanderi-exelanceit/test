@@ -163,37 +163,42 @@ class AuroraJewelry {
     const modal = document.getElementById("product-modal");
     const modalBody = document.getElementById("modal-body");
 
+    // Gallery images (for now, just one, but can be expanded)
+    const galleryImages = [product.image].concat(product.gallery || []);
+
     modalBody.innerHTML = `
-      <div class="modal-product">
-        <div class="modal-product-image">
-          ${this.getProductIcon(product.name)}
+      <div class="modal-product-details-page">
+        <div class="modal-gallery">
+          ${galleryImages
+            .map(
+              (img) =>
+                `<img src="${img}" alt="${this.escapeHtml(
+                  product.name
+                )}" class="modal-gallery-img">`
+            )
+            .join("")}
         </div>
         <div class="modal-product-info">
           <h2>${this.escapeHtml(product.name)}</h2>
+          <div class="modal-product-price">$${product.price.toFixed(2)}</div>
           <p class="modal-product-description">${this.escapeHtml(
             product.description
           )}</p>
-          <div class="modal-product-details">
-            <div class="detail">
-              <strong>Materials:</strong> Sterling silver, natural stones
-            </div>
-            <div class="detail">
-              <strong>Care:</strong> Clean with soft cloth, avoid chemicals
-            </div>
-            <div class="detail">
-              <strong>Shipping:</strong> 3-5 business days
-            </div>
+          <div class="modal-product-meta">
+            <div><strong>Materials:</strong> ${this.escapeHtml(
+              product.materials || "Sterling silver, natural stones"
+            )}</div>
+            <div><strong>Care:</strong> Clean with soft cloth, avoid chemicals</div>
+            <div><strong>Shipping:</strong> 3-5 business days</div>
+            <div><strong>Availability:</strong> ${
+              product.inStock ? "In Stock" : "Out of Stock"
+            }</div>
           </div>
-          <div class="modal-product-footer">
-            <span class="modal-product-price">$${product.price.toFixed(
-              2
-            )}</span>
-            <button class="cta-button" onclick="app.addToCart(${
-              product.id
-            }); app.hideModal();">
-              Add to Cart
-            </button>
-          </div>
+          <button class="cta-button" onclick="app.addToCart(${
+            product.id
+          }); app.hideModal();">
+            Add to Cart
+          </button>
         </div>
       </div>
     `;
