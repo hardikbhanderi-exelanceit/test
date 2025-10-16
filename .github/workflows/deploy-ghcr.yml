@@ -150,14 +150,14 @@ jobs:
             for h in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
               echo "Deploying to $h"
               ssh -o StrictHostKeyChecking=no -i ~/.ssh/hardik-test.pem ubuntu@${h} bash -s <<'DEPLOY'
-set -e
-IMAGE_TAG="${IMAGE_TAG}"
-echo "Pulling $IMAGE_TAG"
-sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} || true
-sudo docker pull "$IMAGE_TAG"
-sudo docker stop test-app || true
-sudo docker rm test-app || true
-sudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"
-echo "Deployment on $(hostname) complete"
-DEPLOY
+                set -e
+                IMAGE_TAG="${IMAGE_TAG}"
+                echo "Pulling $IMAGE_TAG"
+                sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} || true
+                sudo docker pull "$IMAGE_TAG"
+                sudo docker stop test-app || true
+                sudo docker rm test-app || true
+                sudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"
+                echo "Deployment on $(hostname) complete"
+              DEPLOY
             done
