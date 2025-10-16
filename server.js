@@ -1,10 +1,30 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const os = require("os");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || process.env.APP_PORT || 3000;
+
+// Simple logging for NLB monitoring - only home page and health check
+const logNLBRequest = (req, res, next) => {
+  // Only log home page and health check requests
+  if (req.path === '/' || req.path === '/health' || req.path === '/api/health') {
+    const timestamp = new Date().toISOString();
+    const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+    
+    console.log(`[NLB LOG] ${timestamp} - ${req.method} ${req.path} - IP: ${clientIP} - Server: ${os.hostname()}`);
+    
+    res.on('finish', () => {
+      console.log(`[NLB LOG] ${timestamp} - ${req.method} ${req.path} - Status: ${res.statusCode}`);
+    });
+  }
+  next();
+};
+
+// Apply NLB logging middleware
+app.use(logNLBRequest);
 
 app.use(cors());
 app.use(express.json());
@@ -218,12 +238,33 @@ app.get("/api/env", (req, res) => {
   res.json(result);
 });
 
-// Health check endpoint
+// Health check endpoint with NLB logging
 app.get("/api/health", (req, res) => {
+  const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+  const timestamp = new Date().toISOString();
+  
+  console.log(`[NLB LOG] ${timestamp} - Health check from IP: ${clientIP} - Server: ${os.hostname()}`);
+  
   res.json({
     status: "healthy",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
+    timestamp: timestamp,
+    uptime: Math.round(process.uptime()),
+    server: os.hostname(),
+    ip: clientIP
+  });
+});
+
+// NLB health check endpoint (for load balancer)
+app.get("/health", (req, res) => {
+  const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+  const timestamp = new Date().toISOString();
+  
+  console.log(`[NLB LOG] ${timestamp} - NLB health check from IP: ${clientIP} - Server: ${os.hostname()}`);
+  
+  res.json({
+    status: "healthy",
+    server: os.hostname(),
+    timestamp: timestamp
   });
 });
 
@@ -262,6 +303,16 @@ app.use("/api/*", (req, res) => {
     error: "API endpoint not found",
     availableEndpoints: "/api",
   });
+});
+
+// Home page with NLB logging
+app.get("/", (req, res) => {
+  const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+  const timestamp = new Date().toISOString();
+  
+  console.log(`[NLB LOG] ${timestamp} - Home page request from IP: ${clientIP} - Server: ${os.hostname()}`);
+  
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Fallback to index.html for client-side routing
