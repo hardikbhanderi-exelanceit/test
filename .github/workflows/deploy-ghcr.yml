@@ -129,9 +129,18 @@ jobs:
           if [ -z "${{ secrets.NLB_DNS }}" ] || [ "${{ secrets.NLB_DNS }}" = "" ]; then
             echo "WARNING: NLB_DNS secret is not set — skipping webhook trigger"
           else
-            curl -sS -X POST "http://${{ secrets.NLB_DNS }}:8000/deploy" \
-              -H "Content-Type: application/json" \
-              -d "{\"image\": \"${{ steps.meta.outputs.tags }}\"}" || echo "Webhook request failed (continuing)"
+            echo "Attempting to connect to NLB at: ${{ secrets.NLB_DNS }}:8000"
+            echo "Testing connectivity..."
+            if curl -sS --connect-timeout 10 "http://${{ secrets.NLB_DNS }}:8000/health" 2>/dev/null; then
+              echo "NLB is reachable, sending deploy webhook..."
+              curl -sS -X POST "http://${{ secrets.NLB_DNS }}:8000/deploy" \
+                -H "Content-Type: application/json" \
+                -d "{\"image\": \"${{ steps.meta.outputs.tags }}\"}" || echo "Webhook request failed (continuing)"
+            else
+              echo "WARNING: NLB is not reachable at ${{ secrets.NLB_DNS }}:8000"
+              echo "This might be expected if NLB is not configured or the service is down"
+              echo "Continuing with SSH-based deployment..."
+            fi
           fi
 
       - name: Deploy to private EC2s via SSH from public EC2
