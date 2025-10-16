@@ -30,9 +30,9 @@ jobs:
       - name: Copy validation files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.DEV_SERVER_HOST }}
+          host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
           source: ".env.example"
           target: "~/test/"
           strip_components: 0
@@ -40,9 +40,9 @@ jobs:
       - name: Validate Environment Variables on EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.DEV_SERVER_HOST }}
+          host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
           script: |
             cd ~/test
 
@@ -89,12 +89,30 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Prepare deploy key on runner
+        if: ${{ secrets.PRIVATE_SSH_KEY != '' }}
+        run: |
+          echo "Writing deploy key to file (temporary)"
+          printf '%s' "${{ secrets.PRIVATE_SSH_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+      - name: Upload deploy key to public EC2
+        if: ${{ secrets.PRIVATE_SSH_KEY != '' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          source: "deploy_key.pem"
+          target: "~/.ssh/deploy_key.pem"
+          strip_components: 0
+
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.DEV_SERVER_HOST }}
+          host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
           script: |
             # Ensure Docker is available on the deployment host (public EC2).
             # Note: public EC2 is used for builds/deploy orchestration only —
@@ -120,3 +138,32 @@ jobs:
               -H "Content-Type: application/json" \
               -d "{\"image\": \"${{ steps.meta.outputs.tags }}\"}" || echo "Webhook request failed (continuing)"
           fi
+
+      - name: Deploy to private EC2s via SSH from public EC2
+        if: ${{ secrets.PRIVATE_HOSTS != '' }}
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "Reading private hosts from secret"
+            PRIVATE_HOSTS="${{ secrets.PRIVATE_HOSTS }}"  # comma-separated
+            IMAGE_TAG="${{ steps.meta.outputs.tags }}"
+            echo "Deploy image: $IMAGE_TAG"
+
+            for h in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
+              echo "Deploying to $h"
+              ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key.pem ubuntu@${h} bash -s <<'DEPLOY'
+                set -e
+                IMAGE_TAG="${IMAGE_TAG}"
+                echo "Pulling $IMAGE_TAG"
+                sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} || true
+                sudo docker pull "$IMAGE_TAG"
+                sudo docker stop test-app || true
+                sudo docker rm test-app || true
+                sudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"
+                echo "Deployment on $(hostname) complete"
+              DEPLOY
+            done
