@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   app:
     container_name: ${NODE_CONTAINER_NAME}
@@ -13,10 +11,11 @@ services:
     ports:
       - "${NODE_LOCAL_PORT}:${NODE_LOCAL_PORT}"
     networks:
-      - aurora-jewelry-rnd-network
+      - default
 
 networks:
-  aurora-jewelry-rnd-network:
+  default:
+    name: aurora-jewelry-rnd-network
     external: true
 
 volumes:

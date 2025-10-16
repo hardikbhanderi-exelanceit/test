@@ -90,14 +90,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Prepare deploy key on runner
-        if: ${{ secrets.PRIVATE_SSH_KEY != '' }}
+        if: ${{ secrets.PRIVATE_SSH_KEY }}
         run: |
           echo "Writing deploy key to file (temporary)"
           printf '%s' "${{ secrets.PRIVATE_SSH_KEY }}" > deploy_key.pem
           chmod 600 deploy_key.pem
 
       - name: Upload deploy key to public EC2
-        if: ${{ secrets.PRIVATE_SSH_KEY != '' }}
+        if: ${{ secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
