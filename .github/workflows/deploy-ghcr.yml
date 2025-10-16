@@ -46,8 +46,8 @@ jobs:
           script: |
             cd ~/test
 
-            [ ! -f ".env" ] && echo "❌ ERROR: .env file not found" && exit 1
-            [ ! -f ".env.example" ] && echo "❌ ERROR: .env.example not found" && exit 1
+            [ ! -f ".env" ] && echo " ERROR: .env file not found" && exit 1
+            [ ! -f ".env.example" ] && echo " ERROR: .env.example not found" && exit 1
 
             REQUIRED_KEYS=$(grep -v '^#' .env.example | grep -v '^$' | grep '=' | cut -d '=' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
             MISSING_KEYS=()
@@ -64,7 +64,7 @@ jobs:
               fi
             done <<< "$REQUIRED_KEYS"
 
-            [ ${#MISSING_KEYS[@]} -gt 0 ] && echo "❌ Missing required variables" && exit 1
+            [ ${#MISSING_KEYS[@]} -gt 0 ] && echo " Missing required variables" && exit 1
             [ ${#EMPTY_KEYS[@]} -gt 0 ] && echo "⚠️  WARNING: ${#EMPTY_KEYS[@]} empty variables found"
             echo "✅ Environment validation passed"
 
@@ -156,7 +156,103 @@ jobs:
             IMAGE_TAG="${{ steps.meta.outputs.tags }}"
             echo "Deploy image: $IMAGE_TAG"
 
-            for h in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
-              echo "Deploying to $h"
-              printf 'set -e\nIMAGE_TAG="%s"\necho "Installing Docker if not present"\nif ! command -v docker &> /dev/null; then\n  curl -fsSL https://get.docker.com | sudo sh\n  sudo usermod -aG docker ubuntu\nfi\necho "Pulling $IMAGE_TAG"\nsudo docker login ghcr.io -u %s -p %s || true\nsudo docker pull "$IMAGE_TAG"\nsudo docker stop test-app || true\nsudo docker rm test-app || true\nsudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"\necho "Deployment on $(hostname) complete"\n' "$IMAGE_TAG" "${{ github.actor }}" "${{ secrets.GITHUB_TOKEN }}" | ssh -o StrictHostKeyChecking=no -i ~/.ssh/hardik-test.pem ubuntu@${h} bash
-            done
+            # Copy deployment script to public EC2
+            cat > deploy-script.sh << 'EOF'
+#!/bin/bash
+set -e
+IMAGE_TAG="$1"
+GITHUB_ACTOR="$2"
+GITHUB_TOKEN="$3"
+PRIVATE_HOSTS="$4"
+
+echo "=== Starting Multi-Host Deployment ==="
+echo "Image: $IMAGE_TAG"
+echo "GitHub Actor: $GITHUB_ACTOR"
+echo "Private Hosts: $PRIVATE_HOSTS"
+echo "Timestamp: $(date)"
+
+success_count=0
+total_count=0
+failed_hosts=()
+
+for host in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
+  total_count=$((total_count + 1))
+  echo "--- Deploying to $host ---"
+  
+  # Create deployment script for this host
+  deploy_script=$(cat <<DEPLOY_EOF
+set -e
+echo "=== Deployment started on \$(hostname) at \$(date) ==="
+echo "Image: $IMAGE_TAG"
+echo "Server: \$(hostname)"
+echo "IP: \$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4 2>/dev/null || echo 'unknown')"
+
+# Install Docker if not present
+echo "Checking Docker installation..."
+if ! command -v docker &> /dev/null; then
+  echo "Installing Docker..."
+  curl -fsSL https://get.docker.com | sudo sh
+  sudo usermod -aG docker ubuntu
+  echo "Docker installed successfully"
+else
+  echo "Docker is already installed"
+fi
+
+# Login to GHCR
+echo "Logging into GitHub Container Registry..."
+sudo docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN || echo "Failed to login to GHCR, continuing..."
+
+# Pull the new image
+echo "Pulling image: $IMAGE_TAG"
+sudo docker pull "$IMAGE_TAG" || echo "Failed to pull image, continuing with existing image..."
+
+# Stop and remove old container
+echo "Stopping old container..."
+sudo docker stop test-app || echo "No running container to stop"
+
+echo "Removing old container..."
+sudo docker rm test-app || echo "No container to remove"
+
+# Run new container
+echo "Starting new container..."
+sudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"
+
+# Verify container is running
+sleep 5
+if sudo docker ps | grep -q test-app; then
+  echo "✅ Container is running successfully"
+  sudo docker ps | grep test-app
+else
+  echo "❌ Container failed to start"
+  sudo docker logs test-app || echo "No logs available"
+  exit 1
+fi
+
+echo "=== Deployment completed on \$(hostname) at \$(date) ==="
+DEPLOY_EOF
+)
+
+  # Execute deployment
+  if echo "$deploy_script" | ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/hardik-test.pem ubuntu@${host} bash; then
+    echo "✅ Deployment to $host completed successfully"
+    success_count=$((success_count + 1))
+  else
+    echo "❌ Deployment to $host failed"
+    failed_hosts+=("$host")
+  fi
+done
+
+# Summary
+echo "=== Deployment Summary ==="
+echo "✅ Successful deployments: $success_count/$total_count"
+if [ ${#failed_hosts[@]} -gt 0 ]; then
+  echo "❌ Failed hosts: ${failed_hosts[*]}"
+  exit 1
+else
+  echo "🎉 All deployments completed successfully!"
+fi
+EOF
+
+            # Execute the deployment script
+            chmod +x deploy-script.sh
+            ./deploy-script.sh "$IMAGE_TAG" "${{ github.actor }}" "${{ secrets.GITHUB_TOKEN }}" "$PRIVATE_HOSTS"
