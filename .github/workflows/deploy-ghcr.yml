@@ -149,5 +149,5 @@ jobs:
 
             for h in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
               echo "Deploying to $h"
-              printf 'set -e\nIMAGE_TAG="%s"\necho "Pulling $IMAGE_TAG"\nsudo docker login ghcr.io -u %s -p %s || true\nsudo docker pull "$IMAGE_TAG"\nsudo docker stop test-app || true\nsudo docker rm test-app || true\nsudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"\necho "Deployment on $(hostname) complete"\n' "$IMAGE_TAG" "${{ github.actor }}" "${{ secrets.GITHUB_TOKEN }}" | ssh -o StrictHostKeyChecking=no -i ~/.ssh/hardik-test.pem ubuntu@${h} bash
+              printf 'set -e\nIMAGE_TAG="%s"\necho "Installing Docker if not present"\nif ! command -v docker &> /dev/null; then\n  curl -fsSL https://get.docker.com | sudo sh\n  sudo usermod -aG docker ubuntu\nfi\necho "Pulling $IMAGE_TAG"\nsudo docker login ghcr.io -u %s -p %s || true\nsudo docker pull "$IMAGE_TAG"\nsudo docker stop test-app || true\nsudo docker rm test-app || true\nsudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 "$IMAGE_TAG"\necho "Deployment on $(hostname) complete"\n' "$IMAGE_TAG" "${{ github.actor }}" "${{ secrets.GITHUB_TOKEN }}" | ssh -o StrictHostKeyChecking=no -i ~/.ssh/hardik-test.pem ubuntu@${h} bash
             done
