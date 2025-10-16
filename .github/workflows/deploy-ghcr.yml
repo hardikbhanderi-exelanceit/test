@@ -92,8 +92,8 @@ jobs:
       - name: Prepare deploy key on runner
         run: |
           echo "Writing deploy key to file (temporary)"
-          printf '%s' "${{ secrets.PRIVATE_SSH_KEY }}" > deploy_key.pem
-          chmod 600 deploy_key.pem
+          printf '%s' "${{ secrets.PRIVATE_SSH_KEY }}" > hardik-test.pem
+          chmod 600 hardik-test.pem
 
       - name: Upload deploy key to public EC2
         uses: appleboy/scp-action@v0.1.7
@@ -101,8 +101,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
           key: ${{ secrets.PRIVATE_SSH_KEY }}
-          source: "deploy_key.pem"
-          target: "~/.ssh/deploy_key.pem"
+          source: "hardik-test.pem"
+          target: "~/.ssh/hardik-test.pem"
           strip_components: 0
 
       - name: Deploy to AWS EC2
