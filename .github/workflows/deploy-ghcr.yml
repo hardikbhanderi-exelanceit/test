@@ -152,7 +152,7 @@ jobs:
 
             for h in $(echo "$PRIVATE_HOSTS" | tr ',' ' '); do
               echo "Deploying to $h"
-              ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key.pem ubuntu@${h} bash -s <<'DEPLOY'
+              ssh -o StrictHostKeyChecking=no -i ~/.ssh/hardik-test.pem ubuntu@${h} bash -s <<'DEPLOY'
                 set -e
                 IMAGE_TAG="${IMAGE_TAG}"
                 echo "Pulling $IMAGE_TAG"
