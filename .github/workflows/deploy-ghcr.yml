@@ -140,7 +140,7 @@ jobs:
           fi
 
       - name: Deploy to private EC2s via SSH from public EC2
-        if: ${{ secrets.PRIVATE_HOSTS != '' }}
+        if: ${{ secrets.PRIVATE_HOSTS }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
