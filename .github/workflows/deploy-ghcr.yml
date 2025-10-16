@@ -96,14 +96,27 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           script: |
-            # Install Docker if not present
+            # Ensure Docker is available on the deployment host (public EC2).
+            # Note: public EC2 is used for builds/deploy orchestration only —
+            # the application runs on private EC2s behind the NLB.
             if ! command -v docker &> /dev/null; then
               curl -fsSL https://get.docker.com | sudo sh
             fi
             sudo docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            sudo docker pull ${{ steps.meta.outputs.tags }}
-            # Remove old images for this repo except the latest
+            # Pull the new image to the public EC2 to seed cache (optional)
+            sudo docker pull ${{ steps.meta.outputs.tags }} || true
+            # Remove old images for this repo except the latest tag (cleanup)
             sudo docker images --format '{{.Repository}} {{.Tag}} {{.ID}}' | grep 'ghcr.io/hardikbhanderi-exelanceit/test' | grep -v "${{ steps.meta.outputs.tags }}" | awk '{print $3}' | xargs -r sudo docker rmi || true
-            sudo docker stop test-app || true
-            sudo docker rm test-app || true
-            sudo docker run -d --name test-app -e PORT=8000 -p 8000:8000 ${{ steps.meta.outputs.tags }}
+            echo "Public EC2 pull/cleanup complete. Private EC2 instances will be instructed to deploy via the NLB webhook."
+
+      - name: Trigger deploy on private EC2s via NLB
+        if: always()
+        run: |
+          echo "Triggering deploy on private instances via NLB"
+          if [ -z "${{ secrets.NLB_DNS }}" ]; then
+            echo "WARNING: NLB_DNS secret is not set — skipping webhook trigger"
+          else
+            curl -sS -X POST "http://${{ secrets.NLB_DNS }}:8000/deploy" \
+              -H "Content-Type: application/json" \
+              -d "{\"image\": \"${{ steps.meta.outputs.tags }}\"}" || echo "Webhook request failed (continuing)"
+          fi
