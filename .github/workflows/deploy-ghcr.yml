@@ -28,7 +28,6 @@ jobs:
         run: npm ci
 
       - name: Copy validation files to EC2
-        if: ${{ secrets.SERVER_HOST }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -39,7 +38,6 @@ jobs:
           strip_components: 0
 
       - name: Validate Environment Variables on EC2
-        if: ${{ secrets.SERVER_HOST }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -110,7 +108,6 @@ jobs:
           strip_components: 0
 
       - name: Deploy to AWS EC2
-        if: ${{ secrets.SERVER_HOST }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -143,7 +140,6 @@ jobs:
           fi
 
       - name: Deploy to private EC2s via SSH from public EC2
-        if: ${{ secrets.PRIVATE_HOSTS }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
