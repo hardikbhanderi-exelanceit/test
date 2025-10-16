@@ -28,6 +28,7 @@ jobs:
         run: npm ci
 
       - name: Copy validation files to EC2
+        if: ${{ secrets.SERVER_HOST && secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -38,6 +39,7 @@ jobs:
           strip_components: 0
 
       - name: Validate Environment Variables on EC2
+        if: ${{ secrets.SERVER_HOST && secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -108,6 +110,7 @@ jobs:
           strip_components: 0
 
       - name: Deploy to AWS EC2
+        if: ${{ secrets.SERVER_HOST && secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -131,7 +134,7 @@ jobs:
         if: always()
         run: |
           echo "Triggering deploy on private instances via NLB"
-          if [ -z "${{ secrets.NLB_DNS }}" ]; then
+          if [ -z "${{ secrets.NLB_DNS }}" ] || [ "${{ secrets.NLB_DNS }}" = "" ]; then
             echo "WARNING: NLB_DNS secret is not set — skipping webhook trigger"
           else
             curl -sS -X POST "http://${{ secrets.NLB_DNS }}:8000/deploy" \
@@ -140,12 +143,12 @@ jobs:
           fi
 
       - name: Deploy to private EC2s via SSH from public EC2
-        if: ${{ secrets.PRIVATE_HOSTS }}
+        if: ${{ secrets.PRIVATE_HOSTS && secrets.SERVER_HOST && secrets.PRIVATE_SSH_KEY }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
           script: |
             set -e
             echo "Reading private hosts from secret"
