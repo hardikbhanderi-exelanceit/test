@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_why_choose_us",
+  "info": {
+    "name": "why-choose-us",
+    "displayName": "Why Choose Us"
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.feature"
+    },
+    "isShow": { "type": "boolean", "default": true }
+  }
+}

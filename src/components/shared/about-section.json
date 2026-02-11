@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_shared_about_sections",
+  "info": {
+    "name": "about-section",
+    "displayName": "About Section"
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "description": { "type": "richtext" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "isShow": { "type": "boolean", "default": true }
+  }
+}

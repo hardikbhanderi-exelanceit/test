@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_product_sections",
+  "info": {
+    "name": "product-section",
+    "displayName": "Product Section"
+  },
+  "attributes": {
+    "section_title": { "type": "string" },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
+    "isShow": { "type": "boolean", "default": true }
+  }
+}

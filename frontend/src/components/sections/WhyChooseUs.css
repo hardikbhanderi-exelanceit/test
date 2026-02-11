@@ -1,0 +1,128 @@
+.why-choose-us {
+  position: relative;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  padding: var(--spacing-3xl) 0;
+}
+
+.why-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 10% 10%, rgba(12, 56, 36, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.why-choose-us .section-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-3xl);
+}
+
+.why-choose-us .section-label {
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+.why-choose-us .section-title {
+  color: var(--color-accent);
+  font-weight: 300;
+}
+
+.reasons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.reason-card {
+  position: relative;
+  width: 350px;
+  min-height: 400px;
+  padding: 4rem 2rem;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  border: 1px solid rgba(201, 169, 97, 0.1);
+  z-index: 1;
+}
+
+.reason-card::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: white;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  z-index: -1;
+}
+
+.reason-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--color-primary);
+  box-shadow: 0 20px 50px rgba(12, 56, 36, 0.1);
+}
+
+.reason-card:hover .reason-icon {
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.reason-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  margin-bottom: 2rem;
+  transition: all 0.4s ease;
+}
+
+.reason-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.reason-description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 250px;
+}
+
+.reason-accent {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .reasons-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .reasons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reason-card {
+    padding: var(--spacing-lg);
+  }
+}

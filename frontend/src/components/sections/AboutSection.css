@@ -1,0 +1,131 @@
+.about-section {
+  background: var(--color-cream);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.about-content {
+  padding-right: var(--spacing-lg);
+}
+
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.about-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 3rem;
+  color: var(--color-text-primary);
+}
+
+.about-description {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  margin-bottom: 4rem;
+}
+
+.about-description p {
+  margin-bottom: 2rem;
+}
+
+.about-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 3rem;
+  margin-top: 4rem;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 169, 97, 0.08);
+  color: var(--color-primary);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.feature-item h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.feature-item p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-light);
+}
+
+.about-image-wrapper {
+  position: relative;
+}
+
+.image-frame {
+  position: relative;
+  padding: 1rem;
+  background: white;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 1024px) {
+  .about-grid {
+    gap: var(--spacing-xl);
+  }
+
+  .about-content {
+    padding-right: 0;
+  }
+
+  .about-image {
+    height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .about-image {
+    height: 400px;
+  }
+
+  .image-accent {
+    width: 150px;
+    height: 150px;
+    top: -15px;
+    right: -15px;
+  }
+
+  .about-features {
+    grid-template-columns: 1fr;
+  }
+}

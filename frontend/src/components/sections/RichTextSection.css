@@ -1,0 +1,115 @@
+.richtext-section {
+  background: var(--color-white);
+}
+
+.richtext-container {
+  max-width: 900px;
+}
+
+.richtext-content {
+  font-size: 1.0625rem;
+  line-height: 1.9;
+  color: var(--color-text-secondary);
+}
+
+.richtext-content h1,
+.richtext-content h2,
+.richtext-content h3,
+.richtext-content h4,
+.richtext-content h5,
+.richtext-content h6 {
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.richtext-content h1 {
+  font-size: 2.5rem;
+}
+
+.richtext-content h2 {
+  font-size: 2rem;
+}
+
+.richtext-content h3 {
+  font-size: 1.75rem;
+}
+
+.richtext-content p {
+  margin-bottom: var(--spacing-md);
+}
+
+.richtext-content ul,
+.richtext-content ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+}
+
+.richtext-content li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.richtext-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  transition: var(--transition-base);
+}
+
+.richtext-content a:hover {
+  color: var(--color-accent-dark);
+}
+
+.richtext-content blockquote {
+  margin: var(--spacing-lg) 0;
+  padding-left: var(--spacing-lg);
+  border-left: 3px solid var(--color-accent);
+  font-style: italic;
+  color: var(--color-text-light);
+}
+
+.richtext-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 2px;
+  margin: var(--spacing-lg) 0;
+}
+
+.richtext-content code {
+  padding: 0.25rem 0.5rem;
+  background: var(--color-secondary);
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.richtext-content pre {
+  padding: var(--spacing-md);
+  background: var(--color-secondary);
+  border-radius: 2px;
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+}
+
+.richtext-content pre code {
+  padding: 0;
+  background: none;
+}
+
+@media (max-width: 768px) {
+  .richtext-content {
+    font-size: 1rem;
+  }
+
+  .richtext-content h1 {
+    font-size: 2rem;
+  }
+
+  .richtext-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .richtext-content h3 {
+    font-size: 1.5rem;
+  }
+}

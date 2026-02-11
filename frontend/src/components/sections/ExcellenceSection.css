@@ -1,0 +1,260 @@
+.excellence-section {
+  position: relative;
+  padding: var(--spacing-2xl) 0;
+  background: linear-gradient(135deg, var(--color-cream) 0%, rgba(201, 169, 97, 0.03) 100%);
+  overflow: hidden;
+}
+
+/* Background Decorative Elements */
+.excellence-section::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(12, 56, 36, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.excellence-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -80px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(201, 169, 97, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Header */
+.excellence-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  position: relative;
+  z-index: 1;
+}
+
+.section-label {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+  font-family: var(--font-body);
+}
+
+.excellence-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.2;
+}
+
+.excellence-description {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto var(--spacing-lg);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* Decorative Line */
+.excellence-line {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  margin: var(--spacing-lg) auto 0;
+  transform-origin: center;
+  animation: slideIn 0.8s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    scaleX(0);
+  }
+  to {
+    scaleX(1);
+  }
+}
+
+/* Grid Layout */
+.excellence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
+  position: relative;
+  z-index: 2;
+}
+
+/* Cards */
+.excellence-card {
+  position: relative;
+  padding: var(--spacing-lg);
+  background: var(--color-white);
+  border-radius: 2px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), background var(--transition-base);
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.excellence-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+.excellence-card:hover::before {
+  transform: scaleX(1);
+}
+
+.excellence-card:hover {
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, var(--color-white) 0%, rgba(201, 169, 97, 0.03) 100%);
+}
+
+/* Card Accent Circle */
+.card-accent {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(201, 169, 97, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Card Number */
+.card-number {
+  font-size: 4rem;
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  opacity: 0.15;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Card Content */
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+  font-weight: 400;
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.5px;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* Card Border */
+.card-border {
+  position: absolute;
+  bottom: 0;
+  left: var(--spacing-lg);
+  right: var(--spacing-lg);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+}
+
+/* Bottom Accent */
+.excellence-accent {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(12, 56, 36, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .excellence-section {
+    padding: var(--spacing-xl) 0;
+  }
+
+  .excellence-title {
+    font-size: 2rem;
+  }
+
+  .excellence-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .excellence-card {
+    padding: var(--spacing-md);
+    min-height: 280px;
+  }
+
+  .card-number {
+    font-size: 3rem;
+  }
+
+  .excellence-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .section-label {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .excellence-title {
+    font-size: 1.75rem;
+  }
+
+  .excellence-description {
+    font-size: 1rem;
+  }
+
+  .excellence-card {
+    padding: var(--spacing-md);
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+  }
+}

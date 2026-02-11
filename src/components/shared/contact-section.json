@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_contact_sections",
+  "info": {
+    "name": "contact-section",
+    "displayName": "Contact Section"
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "address": { "type": "text" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
+    "map_link": { "type": "string" },
+    "isShow": { "type": "boolean", "default": true }
+  }
+}

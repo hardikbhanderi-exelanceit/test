@@ -1,0 +1,132 @@
+[
+    {
+        "name": "1.5 Carat Brilliant Round Lab Grown Diamond",
+        "description": "Exquisite 1.5 carat round brilliant cut lab grown diamond. This stone features exceptional VVS1 clarity and E color grade, offering maximum fire and brilliance. Perfect for an engagement ring or a timeless pendant.",
+        "price": 2400.0,
+        "diamond_type": "Lab Grown",
+        "carat": 1.5,
+        "shape": "Round",
+        "images": [
+            "diamond-round.png"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "2.0 Carat Princess Cut Lab Grown Diamond",
+        "description": "Stunning 2.0 carat princess cut lab grown diamond. Known for its modern look and sharp geometric lines, this IF clarity stone has a D color grade, representing the pinnacle of lab-grown quality.",
+        "price": 4200.0,
+        "diamond_type": "Lab Grown",
+        "carat": 2.0,
+        "shape": "Princess",
+        "images": [
+            "diamond-princess.png"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "1.2 Carat Emerald Cut Lab Grown Diamond",
+        "description": "Elegant 1.2 carat emerald cut diamond with long, step-cut facets that create a unique 'hall of mirrors' effect. VS1 clarity and F color grade. A sophisticated choice for classic jewelry.",
+        "price": 1850.00,
+        "diamond_type": "Lab Grown",
+        "carat": 1.2,
+        "shape": "Emerald",
+        "images": [
+            "diamond-3.jpg"
+        ],
+        "featured": false,
+        "isShow": true
+    },
+    {
+        "name": "1.75 Carat Oval Cut Lab Grown Diamond",
+        "description": "Beautiful 1.75 carat oval cut diamond that offers an elongated appearance, making it look larger than a round diamond of the same weight. VVS2 clarity and G color.",
+        "price": 2900.00,
+        "diamond_type": "Lab Grown",
+        "carat": 1.75,
+        "shape": "Oval",
+        "images": [
+            "diamond-4.jpg"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "2.5 Carat Cushion Cut Lab Grown Diamond",
+        "description": "Luxurious 2.5 carat cushion cut diamond with rounded corners and larger facets for increased sparkle. Ideal for vintage-inspired settings. VS2 clarity, H color.",
+        "price": 5100.00,
+        "diamond_type": "Lab Grown",
+        "carat": 2.5,
+        "shape": "Cushion",
+        "images": [
+            "diamond-5.jpg"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "1.0 Carat Pear Cut Lab Grown Diamond",
+        "description": "Unique 1.0 carat pear-shaped lab grown diamond, also known as a teardrop. Perfect for a pendant or a distinctive engagement ring. VVS1 clarity, E color.",
+        "price": 1600.00,
+        "diamond_type": "Lab Grown",
+        "carat": 1.0,
+        "shape": "Pear",
+        "images": [
+            "diamond-6.jpg"
+        ],
+        "featured": false,
+        "isShow": true
+    },
+    {
+        "name": "1.3 Carat Heart Shape Lab Grown Diamond",
+        "description": "Romantic 1.3 carat heart-shaped lab diamond. A symbol of love and affection, this stone is cut to perfection. IF clarity, D color.",
+        "price": 2100.00,
+        "diamond_type": "Lab Grown",
+        "carat": 1.3,
+        "shape": "Heart",
+        "images": [
+            "diamond-7.jpg"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "3.0 Carat Radiant Cut Lab Grown Diamond",
+        "description": "Impressive 3.0 carat radiant cut lab diamond, combining the cut of an emerald with the brilliance of a round diamond. VS1 clarity, F color.",
+        "price": 7500.00,
+        "diamond_type": "Lab Grown",
+        "carat": 3.0,
+        "shape": "Radiant",
+        "images": [
+            "diamond-8.jpg"
+        ],
+        "featured": true,
+        "isShow": true
+    },
+    {
+        "name": "1.1 Carat Marquise Cut Lab Grown Diamond",
+        "description": "Distinctive 1.1 carat marquise cut diamond with pointed ends and a boat-like shape. Provides a dramatic and elegant look. VVS2 clarity, G color.",
+        "price": 1750.00,
+        "diamond_type": "Lab Grown",
+        "carat": 1.1,
+        "shape": "Marquise",
+        "images": [
+            "diamond-9.jpg"
+        ],
+        "featured": false,
+        "isShow": true
+    },
+    {
+        "name": "2.2 Carat Asscher Cut Lab Grown Diamond",
+        "description": "Classic 2.2 carat Asscher cut diamond with a square shape and high crown. This art deco style stone offers timeless elegance. VS1 clarity, E color.",
+        "price": 4800.00,
+        "diamond_type": "Lab Grown",
+        "carat": 2.2,
+        "shape": "Asscher",
+        "images": [
+            "diamond-10.jpg"
+        ],
+        "featured": true,
+        "isShow": true
+    }
+]

@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_testimonials",
+  "info": {
+    "name": "testimonial",
+    "displayName": "Testimonial"
+  },
+  "attributes": {
+    "customer_name": { "type": "string" },
+    "review": { "type": "richtext" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

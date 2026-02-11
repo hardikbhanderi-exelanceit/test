@@ -1,0 +1,80 @@
+.quote-section {
+  background: var(--color-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(201, 169, 97, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(201, 169, 97, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.quote-container {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.quote-icon {
+  margin: 0 auto var(--spacing-lg);
+  color: var(--color-accent);
+  opacity: 0.3;
+}
+
+.quote-text {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  font-style: italic;
+  margin-bottom: var(--spacing-lg);
+}
+
+.quote-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quote-author {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.quote-role {
+  font-size: 0.9375rem;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 768px) {
+  .quote-container {
+    padding: var(--spacing-lg);
+  }
+
+  .quote-text {
+    font-size: 1.5rem;
+  }
+
+  .quote-author {
+    font-size: 1rem;
+  }
+
+  .quote-role {
+    font-size: 0.875rem;
+  }
+}
