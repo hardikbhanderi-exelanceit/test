@@ -1,0 +1,41 @@
+version: '3'
+services:
+  strapi:
+    container_name: stratpi_backend
+    build: .
+    image: strapi:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: .tmp/data.db
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+    volumes:
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./public/uploads:/opt/app/public/uploads
+      - ./.tmp:/opt/app/.tmp
+      - ./database:/opt/app/database
+    ports:
+      - '1337:1337'
+    networks:
+      - strapi
+
+  frontend:
+    container_name: strapi_frontend
+    build: ./frontend
+    image: strapi_frontend:latest
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - strapi
+    networks:
+      - strapi
+
+networks:
+  strapi:
+    driver: bridge
