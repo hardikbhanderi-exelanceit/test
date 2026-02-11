@@ -27,7 +27,10 @@ WORKDIR /opt/app
 # Copy Strapi dependencies first for caching
 COPY package.json package-lock.json ./
 ENV NODE_ENV=production
-RUN npm config set fetch-retry-maxtimeout 600000 -g && npm install --include=dev
+# Use --loglevel error to hide deprecation warnings
+# Use --no-audit to speed up install and reduce noise
+RUN npm config set fetch-retry-maxtimeout 600000 -g && \
+    npm install --include=dev --loglevel=error --no-audit --no-fund
 
 # Copy Strapi source code
 COPY . .
